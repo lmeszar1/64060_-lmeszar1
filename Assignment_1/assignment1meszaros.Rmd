@@ -1,0 +1,71 @@
+---
+title: "Assignment1"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Weather dataset downloaded from: https://vincentarelbundock.github.io/Rdatasets/articles/data.html
+
+Documentation: https://vincentarelbundock.github.io/Rdatasets/doc/mosaicData/Weather.html
+
+Importing the dataset into R:
+
+```{r}
+weather <- read.csv("C:/Users/lmszr/Documents/School/Fundamentals of Machine Learning/Weather.csv")
+```
+
+Descriptive summary
+
+```{r}
+summary(weather)
+```
+
+Mean of average temperatures:
+
+```{r}
+mean(weather$avg_temp)
+```
+
+
+Standard deviation of average temperatures:
+
+```{r}
+sd(weather$avg_temp)
+```
+
+IQR of average temperatures:
+
+```{r}
+IQR(weather$avg_temp)
+```
+
+
+Count of different weather events:
+
+```{r}
+table(weather$events)
+```
+
+
+Log transform average temperature and print short sample:
+```{r}
+avg_temp_log <- log(weather$avg_temp)
+avg_temp_log[1:10]
+```
+Average temperature histogram:
+```{r}
+hist(weather$avg_temp, xlab = 'Average Temp', ylab = 'Days', main = 'Average Temperature')
+
+```
+
+Scatterplot of average temperature and average humidity:
+
+```{r}
+plot(weather$avg_temp, weather$avg_humidity, xlab = 'Average Temp', ylab = 'Average Humidity')
+```
