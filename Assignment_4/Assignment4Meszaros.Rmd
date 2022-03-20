@@ -1,0 +1,139 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+Load dataset / libraries
+
+```{r}
+library(tidyverse)
+library(factoextra)
+library(ISLR)
+library(flexclust)
+Pharma <- read.csv('C:/Users/lmszr/Documents/School/Fundamentals of Machine Learning/Pharmaceuticals.csv')
+set.seed(123)
+```
+
+a. Use only the numerical variables (1 to 9) to cluster the 21 firms. Justify the various choices made in 
+conducting the cluster analysis, such as weights for different variables, the specific clustering algorithm(s) 
+used, the number of clusters formed, and so on. 
+
+```{r}
+Pharma_s <- Pharma[, c(3:11)]
+summary(Pharma_s)
+```
+
+Scaling the data frame
+
+```{r}
+Pharma_s <-scale(Pharma_s)
+distance <- get_dist(Pharma_s)
+fviz_dist(distance)
+```
+Determine best K
+
+```{r}
+fviz_nbclust(Pharma_s, kmeans, method = "wss")
+fviz_nbclust(Pharma_s, kmeans, method = "silhouette")
+```
+Silouhette says K =5 is optimal, but looking at WSS k=4 could be better, so I tried both.
+
+Cluster the data
+
+```{r}
+k5 <-kmeans(Pharma_s, centers = 5, nstart = 30)
+k5$centers
+k5$size
+fviz_cluster(k5, data = Pharma_s)
+```
+I don't think the suggested 5 clusters is that useful as cluster 5 only consists of 2 data points. The analyst is looking for an overview of the pharmaceutical market and it is not as meaningful in that sense, so I tried this with K = 4:
+
+```{r}
+k4 <-kmeans(Pharma_s, centers = 4, nstart = 30)
+k4$centers
+k4$size
+fviz_cluster(k4, data = Pharma_s)
+```
+
+b. Interpret the clusters with respect to the numerical variables used in forming the clusters. 
+
+Group 1: 2, 6, 18
+
+Market_Cap: Lower than average
+Beta: Higher than average
+PE_Ratio: Higher than average (highest of all groups)
+ROE: Lower than average (lowest of all groups)
+ROA: Lower than average (lowest of all groups)
+Asset_turnover: Around average
+Leverage: Lower than average
+Rev_Growth: Lower than average
+Net_Profit_Margin: Lower than average (lowest of all groups)
+
+Group 2: 1, 3, 4, 7, 10, 16, 19, 21
+
+Market_Cap: Slightly lower than average
+Beta: Lower than average (lowest of all groups)
+PE_Ratio: Lower than average
+ROE: Higher than average
+ROA: Higher than average 
+Asset_turnover: Slightly higher than average
+Leverage: Lower than average
+Rev_Growth: Lower than average (lowest of all groups)
+Net_Profit_Margin: Higher than average
+
+Group 3: 17, 13, 15, 11
+
+Market_Cap: Higher than average (highest of all groups)
+Beta: Lower than average 
+PE_Ratio: Lower than average
+ROE: Higher than average (highest of all groups)
+ROA: Higher than average (highest of all groups)
+Asset_turnover: Higher than average (highest of all groups)
+Leverage: Lower than average
+Rev_Growth: Higher than average
+Net_Profit_Margin: Higher than average
+
+Group 4: 5, 8, 9, 12, 14, 20
+
+Market_Cap: Lower than average (lowest of all groups)
+Beta: Higher than average (highest of all groups)
+PE_Ratio: Lower than average (lowest of all groups)
+ROE: Lower than average
+ROA: Lower than average
+Asset_turnover: Lower than average (lowest of all groups)
+Leverage: Higher than average (highest of all groups)
+Rev_Growth: Higher than average (highest of all groups)
+Net_Profit_Margin: Lower than average
+
+c. Is there a pattern in the clusters with respect to the numerical variables (10 to 12)? (those not used in forming the clusters) 
+
+```{r}
+table(Pharma[c(2, 6, 18), c(12:14)])
+```
+
+Group 1: They are all on NYSE, 2/3 are Hold, All in different countries
+
+```{r}
+table(Pharma[c(1, 3, 4, 7, 10, 16, 19, 21), c(12:14)])
+```
+
+Group 2: All on NYSE, 4/8 are Hold, 2/8 are Moderate Sell, then 1/8 each Moderate Buy and Strong Buy, 5/8 in the US, 2/8 in UK, and 1 in Switzerland.
+
+```{r}
+table(Pharma[c(17, 13, 15, 11), c(12:14)])
+```
+
+Group 3: 
+
+```{r}
+table(Pharma[c(5, 8, 9, 12, 14, 20), c(12:14)])
+```
+
+Group 4: All on different Exchanges, 4/6 are in the US, 3/6 are Moderate Buy, 2/6 are Moderate Sell, and 1/6 is Hold.
+
+D. Provide an appropriate name for each cluster using any or all of the variables in the dataset.
+
+Group 1: Medium-Low Market Cap and Low Rev Growth
+Group 2: Medium Market Cap and Lowest Rev Growth
+Group 3: Highest Market Cap and High Rev Growth
+Group 4: Lowest Market Cap and Highest Rev Growth
